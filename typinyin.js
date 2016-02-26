@@ -23,6 +23,7 @@
 
 
 (function() {
+	"use strict";
 	// Default settings
 	var defaults = {
 		sentences: [{
@@ -44,7 +45,7 @@
 	var pause = "pause";
 
 	function typinyin() {
-		return ('Typinyin - Ver 0.1.2 \n Please use "new" to create a typinin element.');
+		return ('Typinyin - Ver 0.1.3 \n Please use "new" to create a typinin element.');
 	};
 
 	// Attach to element
@@ -90,12 +91,11 @@
 
 		// Delete characters
 		function del(num, callback) {
-			var _this_ = this;
 			var delCount = num;
 			function _del() {
 				if (delCount > 0) {
 					setTimeout(function() {
-						_this_.textContent = _this_.textContent.substr(0, _this_.textContent.length - 1);
+						typingArea.textContent = typingArea.textContent.substr(0, typingArea.textContent.length - 1);
 						delCount--;
 						_del();
 					}, _this.options.backSpeed);
@@ -115,16 +115,20 @@
 
 		// Switch to the next sentence
 		function nextSentence() {
+			_typingArea = "";
 			if (sentenceCount < _this.options.sentences.length) {
 				var wordCount = 0;
 
 				function nextWord() {
 					if (_this.options.sentences[sentenceCount].ch[wordCount] === "\b") {
-						del.call(typingArea, 1, nextWord);
+						del(1, nextWord);
 						wordCount++;
 					} else if (typeof _this.options.sentences[sentenceCount].ch[wordCount] === "object") {
 						if (typeof _this.options.sentences[sentenceCount].ch[wordCount].del != "undefined") {
-							del.call(typingArea, _this.options.sentences[sentenceCount].ch[wordCount].del, nextWord);
+							del(_this.options.sentences[sentenceCount].ch[wordCount].del, function() {
+								_typingArea = typingArea.textContent;
+								nextWord();
+							});
 							wordCount++;
 						} else if (typeof _this.options.sentences[sentenceCount].ch[wordCount].pause != "undefined") {
 							pause(_this.options.sentences[sentenceCount].ch[wordCount].pause, nextWord);
@@ -136,24 +140,27 @@
 						var word = _this.options.sentences[sentenceCount].py[wordCount];
 						var charCount = 0;
 						var partCount = 0;
-						var wordArea = document.createElement('span');
-						typingArea.appendChild(wordArea);
+						var wordArea = "";
 
 						function nextChar() {
 							if (charCount < word.length) {
 								if (word[charCount] === "\b") {
 									charCount++;
-									del.call(wordArea, 1, nextChar);
+									del(1, nextChar);
+									wordArea = wordArea.slice(0, wordArea.length - 1);
 								} else {
 									setTimeout(function() {
-										wordArea.textContent = wordArea.textContent + word[charCount];
+										wordArea += word[charCount];
+										typingArea.textContent = _typingArea + wordArea;
 										charCount++;
 										nextChar();
 									}, _this.options.typeSpeed);
 								}
 							} else {
 								setTimeout(function() {
-									wordArea.textContent = _this.options.sentences[sentenceCount].ch[wordCount];
+									wordArea = _this.options.sentences[sentenceCount].ch[wordCount];
+									typingArea.textContent = _typingArea + wordArea;
+									_typingArea = typingArea.textContent;
 									wordCount++;
 									nextWord();
 								}, _this.options.typeSpeed);
@@ -166,11 +173,13 @@
 							function _nextChar() {
 								if (_charCount < word[partCount].length) {
 									if (word[partCount][_charCount] === "\b") {
-										del.call(wordArea, 1, _nextChar);
+										del(1, _nextChar);
+										wordArea = wordArea.slice(0, wordArea.length - 1);
 										_charCount++;
 									} else {
 										setTimeout(function() {
-											wordArea.textContent = wordArea.textContent + word[partCount][_charCount];
+											wordArea += word[partCount][_charCount];
+											typingArea.textContent = _typingArea + wordArea;
 											_charCount++;
 											_nextChar();
 										}, _this.options.typeSpeed);
@@ -186,7 +195,8 @@
 							if (partCount < word.length) {
 								if (typeof word[partCount] === "object") {
 									if (typeof word[partCount].del != "undefined") {
-										del.call(wordArea, word[partCount].del, nextPart);
+										del(word[partCount].del, nextPart);
+										wordArea = wordArea.slice(0, wordArea.length - word[partCount].del);
 										partCount++;
 									} else if (typeof word[partCount].pause != "undefined") {
 										pause(word[partCount].pause, nextPart);
@@ -199,7 +209,9 @@
 								}
 							} else {
 								setTimeout(function() {
-									wordArea.textContent = _this.options.sentences[sentenceCount].ch[wordCount];
+									wordArea = _this.options.sentences[sentenceCount].ch[wordCount];
+									typingArea.textContent = _typingArea + wordArea;
+									_typingArea = typingArea.textContent;
 									wordCount++;
 									nextWord();
 								}, _this.options.typeSpeed);
@@ -214,7 +226,7 @@
 					} else {
 						setTimeout(function() {
 							if (sentenceCount < _this.options.sentences.length - 1 || _this.options.loop) {
-								del.call(typingArea, typingArea.textContent.length, nextSentence);
+								del(typingArea.textContent.length, nextSentence);
 								sentenceCount++;
 							} else {
 								if (typeof _this.finished === "function") {
@@ -233,6 +245,7 @@
 		};
 
 		var typingArea = document.createElement('span');
+		var _typingArea = "";
 		typingArea.style = "white-space:pre;";
 		var cursor = document.createElement('span');
 		cursor.className = 'typing-cursor';
