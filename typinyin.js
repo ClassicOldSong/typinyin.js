@@ -116,130 +116,133 @@
 		// Switch to the next sentence
 		function nextSentence() {
 			_typingArea = "";
-			if (sentenceCount < _this.options.sentences.length) {
-				var wordCount = 0;
+			var wordCount = 0;
+			var word;
+			var charCount = 0;
+			var partCount = 0;
+			var wordArea = "";
 
-				function nextWord() {
-					if (_this.options.sentences[sentenceCount].ch[wordCount] === "\b") {
-						del(1, function() {
+			function nextChar() {
+				if (charCount < word.length) {
+					if (word[charCount] === "\b") {
+						charCount++;
+						del(1, nextChar);
+						wordArea = wordArea.slice(0, wordArea.length - 1);
+					} else {
+						setTimeout(function() {
+							wordArea += word[charCount];
+							typingArea.textContent = _typingArea + wordArea;
+							charCount++;
+							nextChar();
+						}, _this.options.typeSpeed);
+					}
+				} else {
+					setTimeout(function() {
+						wordArea = _this.options.sentences[sentenceCount].ch[wordCount];
+						typingArea.textContent = _typingArea + wordArea;
+						_typingArea = typingArea.textContent;
+						wordCount++;
+						nextWord();
+					}, _this.options.typeSpeed);
+				}
+			};
+
+			function nextPart() {
+				var _charCount = 0;
+					function _nextChar() {
+					if (_charCount < word[partCount].length) {
+						if (word[partCount][_charCount] === "\b") {
+							del(1, _nextChar);
+							wordArea = wordArea.slice(0, wordArea.length - 1);
+							_charCount++;
+						} else {
+							setTimeout(function() {
+								wordArea += word[partCount][_charCount];
+								typingArea.textContent = _typingArea + wordArea;
+								_charCount++;
+								_nextChar();
+							}, _this.options.typeSpeed);
+						}
+					} else {
+						setTimeout(function() {
+							partCount++;
+							nextPart();
+						}, _this.options.typeSpeed);
+					}
+				}
+				if (partCount < word.length) {
+					if (typeof word[partCount] === "object") {
+						if (typeof word[partCount].del != "undefined") {
+							del(word[partCount].del, nextPart);
+							wordArea = wordArea.slice(0, wordArea.length - word[partCount].del);
+							partCount++;
+						} else if (typeof word[partCount].pause != "undefined") {
+							pause(word[partCount].pause, nextPart);
+							partCount++;
+						} else {
+							throw new Error("Invalid word or method!");
+						}
+					} else {
+						_nextChar();
+					}
+				} else {
+					setTimeout(function() {
+						wordArea = _this.options.sentences[sentenceCount].ch[wordCount];
+						typingArea.textContent = _typingArea + wordArea;
+						_typingArea = typingArea.textContent;
+						wordCount++;
+						nextWord();
+					}, _this.options.typeSpeed);
+				}
+			}
+
+			function nextWord() {
+				if (_this.options.sentences[sentenceCount].ch[wordCount] === "\b") {
+					del(1, function() {
+						_typingArea = typingArea.textContent;
+						nextWord();
+					});
+					wordCount++;
+				} else if (typeof _this.options.sentences[sentenceCount].ch[wordCount] === "object") {
+					if (typeof _this.options.sentences[sentenceCount].ch[wordCount].del != "undefined") {
+						del(_this.options.sentences[sentenceCount].ch[wordCount].del, function() {
 							_typingArea = typingArea.textContent;
 							nextWord();
 						});
 						wordCount++;
-					} else if (typeof _this.options.sentences[sentenceCount].ch[wordCount] === "object") {
-						if (typeof _this.options.sentences[sentenceCount].ch[wordCount].del != "undefined") {
-							del(_this.options.sentences[sentenceCount].ch[wordCount].del, function() {
-								_typingArea = typingArea.textContent;
-								nextWord();
-							});
-							wordCount++;
-						} else if (typeof _this.options.sentences[sentenceCount].ch[wordCount].pause != "undefined") {
-							pause(_this.options.sentences[sentenceCount].ch[wordCount].pause, nextWord);
-							wordCount++;
-						} else {
-							throw new Error("Invalid word or method!");
-						}
-					} else if (wordCount < _this.options.sentences[sentenceCount].ch.length) {
-						var word = _this.options.sentences[sentenceCount].py[wordCount];
-						var charCount = 0;
-						var partCount = 0;
-						var wordArea = "";
-
-						function nextChar() {
-							if (charCount < word.length) {
-								if (word[charCount] === "\b") {
-									charCount++;
-									del(1, nextChar);
-									wordArea = wordArea.slice(0, wordArea.length - 1);
-								} else {
-									setTimeout(function() {
-										wordArea += word[charCount];
-										typingArea.textContent = _typingArea + wordArea;
-										charCount++;
-										nextChar();
-									}, _this.options.typeSpeed);
-								}
-							} else {
-								setTimeout(function() {
-									wordArea = _this.options.sentences[sentenceCount].ch[wordCount];
-									typingArea.textContent = _typingArea + wordArea;
-									_typingArea = typingArea.textContent;
-									wordCount++;
-									nextWord();
-								}, _this.options.typeSpeed);
-							}
-						};
-
-						function nextPart() {
-							var _charCount = 0;
-
-							function _nextChar() {
-								if (_charCount < word[partCount].length) {
-									if (word[partCount][_charCount] === "\b") {
-										del(1, _nextChar);
-										wordArea = wordArea.slice(0, wordArea.length - 1);
-										_charCount++;
-									} else {
-										setTimeout(function() {
-											wordArea += word[partCount][_charCount];
-											typingArea.textContent = _typingArea + wordArea;
-											_charCount++;
-											_nextChar();
-										}, _this.options.typeSpeed);
-									}
-								} else {
-									setTimeout(function() {
-										partCount++;
-										nextPart();
-									}, _this.options.typeSpeed);
-								}
-							}
-
-							if (partCount < word.length) {
-								if (typeof word[partCount] === "object") {
-									if (typeof word[partCount].del != "undefined") {
-										del(word[partCount].del, nextPart);
-										wordArea = wordArea.slice(0, wordArea.length - word[partCount].del);
-										partCount++;
-									} else if (typeof word[partCount].pause != "undefined") {
-										pause(word[partCount].pause, nextPart);
-										partCount++;
-									} else {
-										throw new Error("Invalid word or method!");
-									}
-								} else {
-									_nextChar();
-								}
-							} else {
-								setTimeout(function() {
-									wordArea = _this.options.sentences[sentenceCount].ch[wordCount];
-									typingArea.textContent = _typingArea + wordArea;
-									_typingArea = typingArea.textContent;
-									wordCount++;
-									nextWord();
-								}, _this.options.typeSpeed);
-							}
-						}
-
-						if (typeof word === "object") {
-							nextPart();
-						} else {
-							nextChar();
-						}
+					} else if (typeof _this.options.sentences[sentenceCount].ch[wordCount].pause != "undefined") {
+						pause(_this.options.sentences[sentenceCount].ch[wordCount].pause, nextWord);
+						wordCount++;
 					} else {
-						setTimeout(function() {
-							if (sentenceCount < _this.options.sentences.length - 1 || _this.options.loop) {
-								del(typingArea.textContent.length, nextSentence);
-								sentenceCount++;
-							} else {
-								if (typeof _this.finished === "function") {
-									_this.finished();
-								};
-								return;
-							}
-						}, _this.options.pause);
+						throw new Error("Invalid word or method!");
 					}
+				} else if (wordCount < _this.options.sentences[sentenceCount].ch.length) {
+					word = _this.options.sentences[sentenceCount].py[wordCount];
+					charCount = 0;
+					partCount = 0;
+					wordArea = "";
+
+					if (typeof word === "object") {
+						nextPart();
+					} else {
+						nextChar();
+					}
+				} else {
+					setTimeout(function() {
+						if (sentenceCount < _this.options.sentences.length - 1 || _this.options.loop) {
+							del(typingArea.textContent.length, nextSentence);
+							sentenceCount++;
+						} else {
+							if (typeof _this.finished === "function") {
+								_this.finished();
+							};
+							return;
+						}
+					}, _this.options.pause);
 				}
+			}
+			if (sentenceCount < _this.options.sentences.length) {
+				wordCount = 0;
 				typingArea.innerHTML = '';
 				nextWord();
 			} else if (_this.options.loop) {
@@ -249,7 +252,7 @@
 
 		var typingArea = document.createElement('span');
 		var _typingArea = "";
-		typingArea.style = "white-space:pre;";
+		typingArea.style.cssText = "white-space:pre-wrap;";
 		var cursor = document.createElement('span');
 		cursor.className = 'typing-cursor';
 		cursor.textContent = _this.options.cursorChar;
