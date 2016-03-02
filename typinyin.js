@@ -121,7 +121,10 @@
 
 				function nextWord() {
 					if (_this.options.sentences[sentenceCount].ch[wordCount] === "\b") {
-						del(1, nextWord);
+						del(1, function() {
+							_typingArea = typingArea.textContent;
+							nextWord();
+						});
 						wordCount++;
 					} else if (typeof _this.options.sentences[sentenceCount].ch[wordCount] === "object") {
 						if (typeof _this.options.sentences[sentenceCount].ch[wordCount].del != "undefined") {
