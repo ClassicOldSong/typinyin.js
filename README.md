@@ -18,7 +18,7 @@ Typinyin.js 是受 [Typed.js](https://github.com/mattboldt/typed.js) 启发而�
 <script src="typinyin.js"></script>
 <script>
 	window.onload = function(){
-		var demo = new Typinyin;
+		var demo = new Typinyin();
 		demo.attach('#typinyin_demo'); // 绑定元素
 		demo.setOptions({
 			sentences: [
