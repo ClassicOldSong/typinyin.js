@@ -21,9 +21,10 @@
 // THE SOFTWARE.
 
 
+"use strict";
 
 (function() {
-	"use strict";
+	/*jshint validthis:true */
 	// Default settings
 	var defaults = {
 		sentences: [{
@@ -41,12 +42,10 @@
 		loop: false, // Loop when finished typing
 	};
 	var finished;
-	var del = "del";
-	var pause = "pause";
 
 	function typinyin() {
 		return ('Typinyin - Ver 0.1.3 \n Please use "new" to create a typinin element.');
-	};
+	}
 
 	// Attach to element
 	function attach(element) {
@@ -54,7 +53,7 @@
 		if (typeof element === "string") {
 			this.element = document.querySelector(this.element);
 		}
-		if (!(this.element && (this.element.nodeType != null))) {
+		if (!(this.element && (this.element.nodeType !== null))) {
 			throw new Error("Invalid typinyin element.");
 		}
 		if (this.element.typinyin) {
@@ -62,7 +61,7 @@
 		}
 		this.element.typinyin = true;
 		return this;
-	};
+	}
 
 	// Set options
 	function setOptions(optioninput) {
@@ -102,16 +101,16 @@
 				} else if (typeof callback === "function") {
 					callback();
 				}
-			};
+			}
 			_del();
-		};
+		}
 
 		// Pause for a given time
 		function pause(time, callback) {
 			setTimeout(function() {
 				callback();
 			}, time);
-		};
+		}
 
 		// Switch to the next sentence
 		function nextSentence() {
@@ -145,7 +144,7 @@
 						nextWord();
 					}, _this.options.typeSpeed);
 				}
-			};
+			}
 
 			function nextPart() {
 				var _charCount = 0;
@@ -235,7 +234,7 @@
 						} else {
 							if (typeof _this.finished === "function") {
 								_this.finished();
-							};
+							}
 							return;
 						}
 					}, _this.options.pause);
@@ -248,7 +247,7 @@
 			} else if (_this.options.loop) {
 				_this.init();
 			}
-		};
+		}
 
 		var typingArea = document.createElement('span');
 		var _typingArea = "";
@@ -263,7 +262,7 @@
 		setTimeout(function() {
 			nextSentence();
 		}, _this.options.startDelay);
-	};
+	}
 
 	typinyin.prototype.attach = attach;
 	typinyin.prototype.setOptions = setOptions;
@@ -273,4 +272,4 @@
 	// Register to window
 	window.Typinyin = typinyin;
 
-}).call(this);
+})();
