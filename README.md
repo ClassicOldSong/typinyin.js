@@ -78,4 +78,4 @@ demo.finished = function() {
 
 如有疑问或者建议欢迎提Issue或者PullRequest或者联系我的邮箱 syqlds@126.com
 
-当然也欢迎访问我的博客 [C次元](http://classicoldsong.me)
+当然也欢迎访问我的博客 [C次元](https://ccoooss.com)
