@@ -12,30 +12,33 @@
 			var demo = new Typinyin();
 			demo.attach('#typinyin_demo'); // Attach element
 			demo.setOptions({
-				sentences: [
+				sentences: [{
+						ch: ["<div id=\"id\" class=\"class\" href=\"name\"><\/div>\n"],
+						py: [["div#id.class[href=",{pause: 1000, del: 5}, "src=name]"]]
+					},
 					{
-						ch: ["这",{pause: 1500}/* Pause 1500ms */,"是","一个","实例",{del: 2}/* Delete 2 characters */,"示例"],
+						ch: ["这",{pause: 1500}/* Pause 1500ms */,"是","一个","实例",{del: 2}/* Delete 2 characters */,"示例\n"],
 						py: ["zhe","","shi","yige","shili","","shili"],
 					}, {
-						ch: ["This is an example."],
-						py: ["This is an exaaaaaaaa\b\b\b\b\b\b\bmple."], // use "\b" to delete a character
+						ch: ["This is an example.\nThis is an example2.\nThis is an example3.\n"],
+						py: ["This is an exaaaaaaa\b\b\b\b\b\bmple.\nThis is an 12321321.\nThis is\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\bexampla1\b\be2.\nThis is an example3."], // use "\b" to delete a character
 					}, {
-						ch: ["完全","无需","jQuery"],
+						ch: ["完全","无需","jQuery\n"],
 						py: ["wanquan","wuxu","jQuery"],
 					}, {
-						ch: ["让","输入","打动","你的","心","\b","❤"], // use "\b" to delete a character
-						py: [["ranfff",{pause: 281},{del: 3}/*Pause 281ms and then delete 3 characters */,"g"],"shuru","dadong","nide","xin","","xin"],
+						ch: ["让","输入","打动","你的","心","\b","❤", "\n"], // use "\b" to delete a character
+						py: [["ranfff",{pause: 281},{del: 3}/*Pause 281ms and then delete 3 characters */,"g"],"shuru","dadong","nide","xin","","xin", ""],
 					}, {
 						ch: ["赶紧","尝试一下","吧","！"],
 						py: ["ganjin","changshiyixia","ba","！"]
 					}
 				], // Sentences needs to be typed
 				startDelay: 1000, // Time before typing starts, in ms
-				typeSpeed: 80, // Time gap between each character, in ms
+				typeSpeed: 100, // Time gap between each character, in ms
 				pause: 1000, // Time waiting before each sentence is to be deleted, in ms
-				backSpeed: 50, // Backspacing speed, in ms
+				backSpeed: 150, // Backspacing speed, in ms
 				cursorChar: "|", // Character for cursor, you may want to use "_" if you are emulating a console
-				loop: false, // Loop when finished typing
+				loop: true, // Loop when finished typing
 			});
 			demo.finished = function() {
 				console.log("Typinyin.js Demo Finished!"); // Excute on finished typing, will not excute when "loop" has been set to true

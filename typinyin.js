@@ -114,7 +114,7 @@
 
 		// Switch to the next sentence
 		function nextSentence() {
-			_typingArea = "";
+			_typingArea = typingArea.textContent;
 			var wordCount = 0;
 			var word;
 			var charCount = 0;
@@ -229,8 +229,10 @@
 				} else {
 					setTimeout(function() {
 						if (sentenceCount < _this.options.sentences.length - 1 || _this.options.loop) {
-							del(typingArea.textContent.length, nextSentence);
+                            // Don't clear type history
+							//del(typingArea.textContent.length, nextSentence);
 							sentenceCount++;
+                            nextSentence();
 						} else {
 							if (typeof _this.finished === "function") {
 								_this.finished();
@@ -242,7 +244,8 @@
 			}
 			if (sentenceCount < _this.options.sentences.length) {
 				wordCount = 0;
-				typingArea.innerHTML = '';
+                // Don't clear type history
+				// typingArea.innerHTML = '';
 				nextWord();
 			} else if (_this.options.loop) {
 				_this.init();
