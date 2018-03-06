@@ -40,6 +40,7 @@
 		backSpeed: 60, // Backspacing speed, in ms
 		cursorChar: "|", // Character for cursor, you may want to use "_" if you are emulating a console
 		loop: false, // Loop when finished typing
+        multiSentences: false
 	};
 	var finished;
 
@@ -114,7 +115,7 @@
 
 		// Switch to the next sentence
 		function nextSentence() {
-			_typingArea = typingArea.textContent;
+			_typingArea = !_this.options.multiSentences? "" : typingArea.textContent;
 			var wordCount = 0;
 			var word;
 			var charCount = 0;
@@ -229,10 +230,9 @@
 				} else {
 					setTimeout(function() {
 						if (sentenceCount < _this.options.sentences.length - 1 || _this.options.loop) {
-                            // Don't clear type history
-							//del(typingArea.textContent.length, nextSentence);
+							!_this.options.multiSentences && del(typingArea.textContent.length, nextSentence);
 							sentenceCount++;
-                            nextSentence();
+                            _this.options.multiSentences && nextSentence();
 						} else {
 							if (typeof _this.finished === "function") {
 								_this.finished();
@@ -244,8 +244,7 @@
 			}
 			if (sentenceCount < _this.options.sentences.length) {
 				wordCount = 0;
-                // Don't clear type history
-				// typingArea.innerHTML = '';
+				if (!_this.options.multiSentences) typingArea.innerHTML = '';
 				nextWord();
 			} else if (_this.options.loop) {
 				_this.init();

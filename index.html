@@ -39,6 +39,7 @@
 				backSpeed: 150, // Backspacing speed, in ms
 				cursorChar: "|", // Character for cursor, you may want to use "_" if you are emulating a console
 				loop: true, // Loop when finished typing
+                multiSentences: false // Support multiple sentences
 			});
 			demo.finished = function() {
 				console.log("Typinyin.js Demo Finished!"); // Excute on finished typing, will not excute when "loop" has been set to true
@@ -52,9 +53,6 @@
 		<h1 class="h1">Typinyin.js</h1>
 		<div class="type-wrap">
 			<span id="typinyin_demo" style="white-space:pre;"></span>
-		</div>
-		<div class="links">
-			<a href="https://github.com/ClassicOldSong/typinyin.js">View on GitHub</a> | <a href="https://nzone.link">Visit NZone!</a> | <a href="http://classicoldsong.me">Visit my blog</a>
 		</div>
 	</div>
 </body>
